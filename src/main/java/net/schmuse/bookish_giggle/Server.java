@@ -1,14 +1,15 @@
 package net.schmuse.bookish_giggle;
 
+import com.google.gson.Gson;
 import fi.iki.elonen.NanoHTTPD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 class Server extends NanoHTTPD {
 
@@ -49,11 +50,10 @@ class Server extends NanoHTTPD {
         Map<String, String> headers = session.getHeaders();
 
         if (!headers.containsKey("content-type")) {
-            return newFixedLengthResponse(
-                    NanoHTTPD.Response.Status.BAD_REQUEST,
-                    NanoHTTPD.MIME_PLAINTEXT,
-                    "400 Bad Request: content-type header required\n"
-            );
+            Error error = new Error(ErrorCode.CONTENT_TYPE_HEADER_REQUIRED);
+            Gson gson = new Gson();
+            String json = gson.toJson(error);
+            return newFixedLengthResponse(json);
         }
 
         NanoHTTPD.ContentType contentType = new ContentType(headers.get("content-type"));
