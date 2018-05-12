@@ -1,5 +1,6 @@
 package net.schmuse.bookish_giggle;
 
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 public class Error {
@@ -32,5 +33,11 @@ public class Error {
 
     public void setMsg(String msg) {
         this.msg = msg;
+    }
+
+    public static String toJsonError(ErrorCode code) {
+        Error error = new Error(code);
+        Gson gson = new Gson();
+        return gson.toJson(error);
     }
 }

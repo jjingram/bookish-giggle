@@ -50,20 +50,12 @@ class Server extends NanoHTTPD {
         Map<String, String> headers = session.getHeaders();
 
         if (!headers.containsKey("content-type")) {
-            Error error = new Error(ErrorCode.CONTENT_TYPE_HEADER_REQUIRED);
-            Gson gson = new Gson();
-            String json = gson.toJson(error);
-            return newFixedLengthResponse(json);
+            return newFixedLengthResponse(Error.toJsonError(ErrorCode.CONTENT_TYPE_HEADER_REQUIRED));
         }
 
         NanoHTTPD.ContentType contentType = new ContentType(headers.get("content-type"));
         if (!contentType.getContentType().equals("text/markdown")) {
-            logger.info(contentType.getContentType());
-            return newFixedLengthResponse(
-                    NanoHTTPD.Response.Status.BAD_REQUEST,
-                    NanoHTTPD.MIME_PLAINTEXT,
-                    "400 Bad Request: content-type must be text/markdown\n"
-            );
+            return newFixedLengthResponse(Error.toJsonError(ErrorCode.MIME_TYPE_TEXT_MARKDOWN));
         }
 
         Map<String, String> files = new HashMap<>();
